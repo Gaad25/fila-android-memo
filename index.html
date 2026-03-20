@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memo - Estudo com IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue-primary: #325bc1;
+            --blue-dark: #253f8a;
+            --blue-light: #e8edf8;
+            --bg: #f0f4ff;
+            --text-primary: #111625;
+            --text-secondary: #4a5568;
+            --white: #ffffff;
+            --shadow-soft: 0 4px 24px rgba(50, 91, 193, 0.15);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .bg-decoration { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bg-circle { position: absolute; border-radius: 50%; opacity: 0.12; }
+        .bg-circle-1 { width: 400px; height: 400px; background: var(--blue-primary); top: -120px; right: -100px; animation: float 8s ease-in-out infinite; }
+        .bg-circle-2 { width: 300px; height: 300px; background: var(--blue-primary); bottom: -80px; left: -80px; animation: float 10s ease-in-out infinite reverse; }
+        .bg-circle-3 { width: 200px; height: 200px; background: #FBBF24; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: float 12s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+        .container { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 40px 24px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .logo-area { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.8s ease-out; }
+        .logo-svg { width: 140px; height: 140px; margin: 0 auto 8px; }
+        .card { background: var(--white); border-radius: var(--radius); padding: 36px 28px; box-shadow: var(--shadow-card); width: 100%; text-align: center; animation: fadeInUp 0.8s ease-out 0.2s both; }
+        .card h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+        .card p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
+        .features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; text-align: left; }
+        .feature { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--blue-light); border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--blue-dark); }
+        .feature-icon { width: 32px; height: 32px; background: var(--blue-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .feature-icon svg { width: 18px; height: 18px; fill: white; }
+        .btn-appstore { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 16px 24px; background: var(--text-primary); color: white; border: none; border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-appstore:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .btn-appstore svg { width: 24px; height: 24px; fill: white; }
+        .btn-appstore span.small { font-size: 11px; font-weight: 600; opacity: 0.8; display: block; line-height: 1; }
+        .btn-appstore span.big { font-size: 18px; font-weight: 800; display: block; line-height: 1.2; }
+        .btn-appstore-text { text-align: left; }
+        .waitlist-form { width: 100%; }
+        .input-group { display: flex; flex-direction: column; gap: 12px; }
+        .input-group input { width: 100%; padding: 16px 18px; border: 2px solid #e2e8f0; border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); outline: none; transition: border-color 0.3s; }
+        .input-group input::placeholder { color: #a0aec0; }
+        .input-group input:focus { border-color: var(--blue-primary); }
+        .btn-waitlist { width: 100%; padding: 16px 24px; background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark)); color: white; border: none; border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-waitlist:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+        .btn-waitlist:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .success-message { display: none; text-align: center; padding: 20px; }
+        .success-message.show { display: block; animation: fadeInUp 0.5s ease-out; }
+        .success-icon { width: 64px; height: 64px; background: var(--blue-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .success-icon svg { width: 32px; height: 32px; fill: var(--blue-primary); }
+        .success-message h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+        .success-message p { font-size: 14px; color: var(--text-secondary); margin-bottom: 0; }
+        .platform-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: var(--blue-light); color: var(--blue-dark); border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 20px; }
+        .footer { margin-top: 32px; text-align: center; font-size: 13px; color: var(--text-secondary); animation: fadeInUp 0.8s ease-out 0.4s both; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .error-text { color: #e53e3e; font-size: 13px; font-weight: 600; margin-top: 8px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="bg-circle bg-circle-1"></div>
+        <div class="bg-circle bg-circle-2"></div>
+        <div class="bg-circle bg-circle-3"></div>
+    </div>
+    <div class="container">
+        <div class="logo-area">
+            <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">
+                <circle cx="125" cy="95" r="48" stroke="#325bc1" stroke-width="12" fill="none"/>
+                <rect x="119" y="33" width="12" height="14" fill="#325bc1"/>
+                <rect x="105" y="21" width="40" height="12" rx="4" fill="#325bc1"/>
+                <path d="M 103 97 L 119 113 L 149 81" stroke="#325bc1" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <text x="125" y="210" font-family="'Montserrat', 'Helvetica Neue', sans-serif" font-weight="900" font-size="56" fill="#111625" text-anchor="middle" letter-spacing="2">MEMO</text>
+            </svg>
+        </div>
+        <div class="card">
+            <div id="ios-content" style="display: none;">
+                <div class="platform-badge">🍎 Disponível para iPhone</div>
+                <h2>Estude de forma mais inteligente</h2>
+                <p>Quizzes, resumos e correção de redações com IA. Tudo que você precisa para acelerar seus estudos.</p>
+                <div class="features">
+                    <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/></svg></div>Quizzes gerados por IA</div>
+                    <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>Resumos automáticos</div>
+                    <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div>Correção de redações</div>
+                </div>
+                <a href="https://apps.apple.com/app/memo-estudo-com-ia/id6751248733" class="btn-appstore" target="_blank">
+                    <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    <div class="btn-appstore-text"><span class="small">Baixar na</span><span class="big">App Store</span></div>
+                </a>
+            </div>
+            <div id="waitlist-content" style="display: none;">
+                <div class="platform-badge">🚀 Em breve para Android & Web</div>
+                <h2>Estude de forma mais inteligente</h2>
+                <p>Quizzes, resumos e correção de redações com IA. Entre na lista de espera e seja o primeiro a saber quando lançarmos!</p>
+                <div class="features">
+                    <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/></svg></div>Quizzes gerados por IA</div>
+                    <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>Resumos automáticos</div>
+                    <div class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></div>Correção de redações</div>
+                </div>
+                <div class="waitlist-form" id="waitlist-form">
+                    <div class="input-group">
+                        <input type="text" id="name-input" placeholder="Seu nome" required>
+                        <input type="email" id="email-input" placeholder="Seu melhor e-mail" required>
+                        <button class="btn-waitlist" id="btn-submit" onclick="submitWaitlist()">Entrar na lista de espera 🎉</button>
+                    </div>
+                    <p class="error-text" id="error-text">Por favor, preencha todos os campos corretamente.</p>
+                </div>
+                <div class="success-message" id="success-message">
+                    <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+                    <h3>Você está na lista! 🎉</h3>
+                    <p>Vamos te avisar assim que o Memo estiver disponível para o seu dispositivo.</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">Feito com 💙 para concurseiros</div>
+    </div>
+    <script>
+        function detectPlatform() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+            if (/android/i.test(ua)) return 'android';
+            return 'other';
+        }
+        const platform = detectPlatform();
+        if (platform === 'ios') {
+            document.getElementById('ios-content').style.display = 'block';
+        } else {
+            document.getElementById('waitlist-content').style.display = 'block';
+        }
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhvnVh-ZgWxwsNrBhdVzuwKT7WFpZaUWPx6XKsBAFguzZeJqF8mUNPCrZRklJD3--9/exec';
+        async function submitWaitlist() {
+            const name = document.getElementById('name-input').value.trim();
+            const email = document.getElementById('email-input').value.trim();
+            const btn = document.getElementById('btn-submit');
+            const errorText = document.getElementById('error-text');
+            errorText.style.display = 'none';
+            if (!name || !email || !email.includes('@')) { errorText.style.display = 'block'; return; }
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, platform, date: new Date().toISOString() })
+                });
+                document.getElementById('waitlist-form').style.display = 'none';
+                document.getElementById('success-message').classList.add('show');
+            } catch (err) {
+                errorText.textContent = 'Erro ao enviar. Tente novamente.';
+                errorText.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Entrar na lista de espera 🎉';
+            }
+        }
+        document.getElementById('email-input')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') submitWaitlist(); });
+    </script>
+</body>
+</html>
